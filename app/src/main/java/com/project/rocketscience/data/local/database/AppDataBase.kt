@@ -3,7 +3,9 @@ package com.project.rocketscience.data.local.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.project.rocketscience.data.local.database.dao.CompanyInfoDao
+import com.project.rocketscience.data.local.database.dao.LaunchDao
 import com.project.rocketscience.data.local.database.entity.CompanyInfoEntity
+import com.project.rocketscience.data.local.database.entity.LaunchEntity
 
 /**
  * The main Room database class for the application.
@@ -22,10 +24,11 @@ import com.project.rocketscience.data.local.database.entity.CompanyInfoEntity
  *                    exporting the schema can be useful for migrations and debugging.
  */
 @Database(
-    entities = [CompanyInfoEntity::class],
+    entities = [CompanyInfoEntity::class, LaunchEntity::class],
     version = 1,
     exportSchema = false
 )
 abstract class AppDataBase : RoomDatabase() {
     abstract fun getCompanyInfo(): CompanyInfoDao
+    abstract fun getLaunches(): LaunchDao
 }

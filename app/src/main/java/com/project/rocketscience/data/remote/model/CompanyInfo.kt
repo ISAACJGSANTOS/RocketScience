@@ -21,6 +21,14 @@ data class CompanyInfo(
     @SerializedName("valuation")
     val valuation: Long
 ) {
+
+    /**
+     * Builds a description of the company based on its key properties.
+     *
+     * The description includes the company's name, founder, founding year, number of employees,
+     * number of launch sites, and current valuation.
+     *
+     */
     fun getCompanyDescription(): String {
         return "${name}, was founded by $founder in $founded. " +
                 "It has now $employees employees, " +

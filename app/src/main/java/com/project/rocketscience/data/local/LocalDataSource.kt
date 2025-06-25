@@ -1,6 +1,7 @@
 package com.project.rocketscience.data.local
 
 import com.project.rocketscience.data.remote.model.CompanyInfo
+import com.project.rocketscience.data.remote.model.Launch
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -20,6 +21,19 @@ interface LocalDataSource {
      *
      * @param companyInfo The [CompanyInfo] to be persisted locally.
      */
-
     suspend fun saveCompanyInfoToDatabase(companyInfo: CompanyInfo)
+
+    /**
+     * Retrieves a list of [Launch] stored in the local database.
+     *
+     * @return A [Flow] that emits the stored [Launch] data.
+     */
+    suspend fun getLaunchesFromDatabase(): Flow<List<Launch>>
+
+    /**
+     * Saves the given list of [Launch] into the local database.
+     *
+     * @param launchesList The list of [Launch] to be persisted locally.
+     */
+    suspend fun saveLaunchesToDatabase(launchesList: List<Launch>)
 }
