@@ -3,6 +3,7 @@ package com.project.rocketscience.data.repository
 import com.project.rocketscience.data.local.LocalDataSource
 import com.project.rocketscience.data.remote.RemoteDataSource
 import com.project.rocketscience.data.remote.model.CompanyInfo
+import com.project.rocketscience.data.remote.model.Launch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.Response
@@ -13,7 +14,7 @@ import javax.inject.Inject
 class AppRepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val localDataSource: LocalDataSource
-): AppRepository {
+) : AppRepository {
 
     override suspend fun getCompanyInfo(): Flow<Result<CompanyInfo>> {
         return flow {
@@ -26,6 +27,22 @@ class AppRepositoryImpl @Inject constructor(
                 emit(Result.failure(error))
                 localDataSource.getCompanyInfoFromDatabase().collect { companyInfo ->
                     emit(Result.success(companyInfo))
+                }
+            }
+        }
+    }
+
+    override suspend fun getLaunches(): Flow<Result<List<Launch>>> {
+        return flow {
+            fetchData {
+                remoteDataSource.requestLaunches()
+            }.onSuccess { response ->
+                emit(Result.success(response))
+                localDataSource.saveLaunchesToDatabase(launchesList = response)
+            }.onFailure { error ->
+                emit(Result.failure(error))
+                localDataSource.getLaunchesFromDatabase().collect { storedLaunches ->
+                    emit(Result.success(storedLaunches))
                 }
             }
         }

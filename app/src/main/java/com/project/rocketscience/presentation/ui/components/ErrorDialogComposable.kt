@@ -12,7 +12,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import com.project.rocketscience.R
 
-
 /**
  * Displays an error [AlertDialog] with a message and a single confirmation button.
  *
@@ -23,9 +22,11 @@ import com.project.rocketscience.R
  * @param onButtonClickAction A callback invoked when the user clicks the "OK" button.
  *
  */
-
 @Composable
-fun ErrorAlertDialog(error: String, onButtonClickAction: () -> Unit) {
+fun ErrorAlertDialog(
+    error: String,
+    onButtonClickAction: () -> Unit
+) {
     val showDialogError = remember { mutableStateOf(true) }
     LaunchedEffect(error) {
         showDialogError.value = true
@@ -42,7 +43,7 @@ fun ErrorAlertDialog(error: String, onButtonClickAction: () -> Unit) {
                     showDialogError.value = false
                     onButtonClickAction()
                 }) {
-                    Text( stringResource(id = R.string.error_dialog_ok_button_text))
+                    Text(stringResource(id = R.string.error_dialog_button_text))
                 }
             }
         )

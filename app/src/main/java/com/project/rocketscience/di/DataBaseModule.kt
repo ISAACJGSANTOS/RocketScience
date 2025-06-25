@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.project.rocketscience.data.local.database.AppDataBase
 import com.project.rocketscience.data.local.database.dao.CompanyInfoDao
+import com.project.rocketscience.data.local.database.dao.LaunchDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,5 +47,19 @@ object DataBaseModule {
     @Singleton
     fun provideCompanyInfoDao(appDataBase: AppDataBase): CompanyInfoDao {
         return appDataBase.getCompanyInfo()
+    }
+
+    /**
+     * Provides a singleton instance of the [LaunchDao].
+     *
+     * This DAO is obtained from the provided [AppDataBase] instance.
+     *
+     * @param appDataBase The singleton [AppDataBase] instance, injected by Hilt.
+     * @return The singleton [LaunchDao] instance.
+     */
+    @Provides
+    @Singleton
+    fun provideLaunchesDao(appDataBase: AppDataBase): LaunchDao {
+        return appDataBase.getLaunches()
     }
 }

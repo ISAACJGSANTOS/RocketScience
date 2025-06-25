@@ -1,9 +1,19 @@
 <resources>
     <string name="app_name">Rocket Science</string>
 
-    <string name="company_title">Company</string>
+    <string name="dashboard_company_header_text">Company</string>
+    <string name="dashboard_launches_header_text">Launches</string>
+
+    <string name="launch_item_mission_text">Mission:</string>
+    <string name="launch_item_date_text">Date/Time:</string>
+    <string name="launch_item_rocket_text">Rocket:</string>
 
     <string name="error_dialog_title">Oops, there is an error</string>
-    <string name="error_dialog_ok_button_text">OK</string>
+    <string name="error_dialog_button_text">OK</string>
+
+    <string name="more_info_dialog_title">More Info</string>
+    <string name="more_info_dialog_description">Select an option to view more details about this launch</string>
+    <string name="more_info_dialog_first_button_text">Wikipedia</string>
+    <string name="more_info_dialog_second_button_text">Youtube</string>
 
 </resources>
