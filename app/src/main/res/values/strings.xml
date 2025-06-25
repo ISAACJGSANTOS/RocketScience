@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Rocket Science</string>
+
+    <string name="company_title">Company</string>
+
+    <string name="error_dialog_title">Oops, there is an error</string>
+    <string name="error_dialog_ok_button_text">OK</string>
+
 </resources>

@@ -1,4 +1,4 @@
-package com.project.rocketscience.ui.theme
+package com.project.rocketscience.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
