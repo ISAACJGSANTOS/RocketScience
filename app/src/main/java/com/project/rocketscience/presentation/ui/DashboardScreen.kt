@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -44,9 +45,23 @@ import com.project.rocketscience.presentation.ui.components.CircularLoading
 import com.project.rocketscience.presentation.ui.components.ErrorAlertDialog
 import com.project.rocketscience.presentation.ui.components.MoreInfoDialog
 import com.project.rocketscience.presentation.ui.components.TopAppBar
+import com.project.rocketscience.presentation.ui.components.YearFilterAlertDialog
 import com.project.rocketscience.presentation.ui.state.UiState
 import com.project.rocketscience.presentation.ui.viewmodel.DashboardViewModel
 
+/**
+ * Main screen composable that displays company info and a list of launches.
+ *
+ * This composable sets up the scaffold layout for the dashboard screen. It includes a top app bar
+ * with a filter icon, displays the company info and launches, and handles different UI states
+ * such as loading, error, and success. Users can interact with the list of launches to see
+ * more info, and apply filters by launch year.
+ *
+ * @param dashboardViewModel The ViewModel that provides the data for the dashboard screen.
+ * Injected automatically by Hilt if not passed explicitly.
+ * @param launchInfoNavAction Callback function invoked when a launch info item (Wikipedia or
+ * YouTube link) is selected. Receives the URL as a parameter to be used in navigation.
+ */
 @Composable
 fun Dashboard(
     dashboardViewModel: DashboardViewModel = hiltViewModel(),
@@ -62,11 +77,15 @@ fun Dashboard(
     var showMoreInfoDialog by remember { mutableStateOf(false) }
     var selectedLaunchItem by remember { mutableStateOf<Launch?>(null) }
 
+    var showYearFilterDialog by remember { mutableStateOf(false) }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = "RocketScienceApp"
+                title = "RocketScienceApp",
+                showFilterIcon = true,
+                onFilterIconClick = { showYearFilterDialog = true }
             )
         }
     ) { innerPadding ->
@@ -115,6 +134,18 @@ fun Dashboard(
                     )
                 }
             }
+
+            if (showYearFilterDialog) {
+                YearFilterAlertDialog(
+                    onApplyFilterButtonClick = { filterYearsList, organizeDescending ->
+                        dashboardViewModel.getFilteredLaunches(
+                            filterYearsList = filterYearsList,
+                            organizeDescending = organizeDescending
+                        )
+                    },
+                    onDismissClickAction = { showYearFilterDialog = false }
+                )
+            }
         }
     }
 }
@@ -125,7 +156,6 @@ private fun DashboardContent(
     launchesList: List<Launch>?,
     onLaunchItemClick: (Launch) -> Unit,
 ) {
-
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.SpaceBetween

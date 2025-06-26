@@ -16,4 +16,9 @@
     <string name="more_info_dialog_first_button_text">Wikipedia</string>
     <string name="more_info_dialog_second_button_text">Youtube</string>
 
+    <string name="year_filter_title">Select Year</string>
+    <string name="year_filter_confirmation_button">Apply Filter</string>
+    <string name="year_filter_descending_checkbox_text">Descending order</string>
+
+
 </resources>

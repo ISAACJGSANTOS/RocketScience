@@ -10,7 +10,7 @@ import com.project.rocketscience.data.remote.model.CompanyInfo
 import com.project.rocketscience.data.remote.model.Launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -19,11 +19,8 @@ class LocalDataSourceImpl @Inject constructor(
     private val launchDao: LaunchDao
 ) : LocalDataSource {
     override suspend fun getCompanyInfoFromDatabase(): Flow<CompanyInfo> {
-        return flow {
-            companyInfoDao.getCompanyInfo().collect { companyInfoEntity ->
-                val companyInfo = companyInfoEntity.toCompanyInfo()
-                emit(companyInfo)
-            }
+        return withContext(Dispatchers.IO) {
+            companyInfoDao.getCompanyInfo().mapNotNull { entity -> entity?.toCompanyInfo() }
         }
     }
 
@@ -34,11 +31,11 @@ class LocalDataSourceImpl @Inject constructor(
     }
 
     override suspend fun getLaunchesFromDatabase(): Flow<List<Launch>> {
-        return flow {
-            launchDao.getListOfLaunches().collect { storedLaunches ->
-                val launches = storedLaunches.map { launchEntity -> launchEntity.toLaunch() }
-                emit(launches)
-            }
+        return withContext(Dispatchers.IO) {
+            launchDao.getListOfLaunches()
+                .mapNotNull { storedLaunches ->
+                    storedLaunches.map { launchEntity -> launchEntity.toLaunch() }
+                }
         }
     }
 

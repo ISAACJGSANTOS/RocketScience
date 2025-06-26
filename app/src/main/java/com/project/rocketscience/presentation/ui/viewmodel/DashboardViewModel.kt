@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.project.rocketscience.data.remote.model.CompanyInfo
 import com.project.rocketscience.data.remote.model.Launch
 import com.project.rocketscience.domain.GetCompanyInfoUseCase
+import com.project.rocketscience.domain.GetFilteredLaunchesUseCase
 import com.project.rocketscience.domain.GetLaunchesUseCase
 import com.project.rocketscience.presentation.ui.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val getCompanyInfoUseCase: GetCompanyInfoUseCase,
-    private val getLaunchesUseCase: GetLaunchesUseCase
+    private val getLaunchesUseCase: GetLaunchesUseCase,
+    private val getFilteredLaunchesUseCase: GetFilteredLaunchesUseCase
 ) : ViewModel() {
     // Mutable state for internal use only
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
@@ -74,12 +76,41 @@ class DashboardViewModel @Inject constructor(
     }
 
     /**
-     * Initiates collection of company information using the [GetLaunchesUseCase].
-     * Updates [_launchFlow] and [_uiState] based on the result.
+     * Fetches all rocket launches using [getLaunchesUseCase] and updates the UI state accordingly.
+     *
+     * This method is executed within the [viewModelScope] to collect the result from the use case.
+     * On success, the list of launches is stored in [_launchFlow] and the UI is updated to [UiState.Success].
+     * On failure, an error message is stored in [UiState.Error] for appropriate UI feedback.
      */
     private fun getLaunches() {
         viewModelScope.launch {
             getLaunchesUseCase().collect { result ->
+                result.onSuccess { launches ->
+                    _launchFlow.value = launches
+                    _uiState.value = UiState.Success
+                }.onFailure {
+                    _uiState.value = UiState.Error(it.message.toString())
+                }
+            }
+        }
+    }
+
+    /**
+     * Retrieves a filtered and optionally sorted list of rocket launches.
+     *
+     * This function uses [getFilteredLaunchesUseCase] to fetch launches based on the provided filter criteria,
+     * then updates the UI state and the internal [launchFlow] with the result.
+     *
+     * @param filterYearsList A list of years to filter the launches by. If empty, all years are considered.
+     * @param organizeDescending If true, the resulting launches are sorted by year in descending order.
+     */
+    fun getFilteredLaunches(filterYearsList: List<String>, organizeDescending: Boolean) {
+        viewModelScope.launch {
+            _uiState.value = UiState.Loading
+            getFilteredLaunchesUseCase(
+                filterYearsList = filterYearsList,
+                organizeDescending = organizeDescending
+            ).collect { result ->
                 result.onSuccess { launches ->
                     _launchFlow.value = launches
                     _uiState.value = UiState.Success
