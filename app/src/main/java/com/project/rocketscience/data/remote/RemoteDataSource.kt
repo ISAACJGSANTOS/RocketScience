@@ -14,12 +14,12 @@ interface RemoteDataSource {
      *
      * @return A [Response] containing the [CompanyInfo] or an error state.
      */
-    suspend fun requestCompanyInfo(): Response<CompanyInfo>
+    suspend fun requestCompanyInfo(): CompanyInfo
 
     /**
      * Requests the list of [Launch] from a remote server or API.
      *
      * @return A [Response] containing the list of [Launch] or an error state.
      */
-    suspend fun requestLaunches(): Response<List<Launch>>
+    suspend fun requestLaunches(): List<Launch>
 }

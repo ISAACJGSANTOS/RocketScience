@@ -2,6 +2,8 @@ package com.project.rocketscience.presentation.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.project.rocketscience.R
+import com.project.rocketscience.core.AppException
 import com.project.rocketscience.data.remote.model.CompanyInfo
 import com.project.rocketscience.data.remote.model.Launch
 import com.project.rocketscience.domain.GetCompanyInfoUseCase
@@ -11,6 +13,7 @@ import com.project.rocketscience.presentation.ui.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,7 +37,7 @@ class DashboardViewModel @Inject constructor(
      * Publicly exposed [StateFlow] for observing the overall UI state.
      * UI components should collect this flow to react to loading, success, or error conditions.
      */
-    val uiState: StateFlow<UiState> = _uiState
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     // Mutable state for internal use only
     private val _companyInfoFlow = MutableStateFlow<CompanyInfo?>(null)
@@ -43,7 +46,7 @@ class DashboardViewModel @Inject constructor(
      * Publicly exposed [StateFlow] for observing the SpaceX company information.
      * UI components should collect this flow to receive updates.
      */
-    val companyInfoFlow: StateFlow<CompanyInfo?> = _companyInfoFlow
+    val companyInfoFlow: StateFlow<CompanyInfo?> = _companyInfoFlow.asStateFlow()
 
     // Mutable state for internal use only
     private val _launchFlow = MutableStateFlow<List<Launch>>(emptyList())
@@ -52,7 +55,7 @@ class DashboardViewModel @Inject constructor(
      * Publicly exposed [StateFlow] for observing the list of launches to be displayed.
      * UI components should collect this flow to receive updates.
      */
-    val launchFlow: StateFlow<List<Launch>> = _launchFlow
+    val launchFlow: StateFlow<List<Launch>> = _launchFlow.asStateFlow()
 
     init {
         getCompanyInfo()
@@ -68,8 +71,6 @@ class DashboardViewModel @Inject constructor(
             getCompanyInfoUseCase().collect { result ->
                 result.onSuccess { companyInfo ->
                     _companyInfoFlow.value = companyInfo
-                }.onFailure {
-                    _uiState.value = UiState.Error(it.message.toString())
                 }
             }
         }
@@ -85,11 +86,12 @@ class DashboardViewModel @Inject constructor(
     private fun getLaunches() {
         viewModelScope.launch {
             getLaunchesUseCase().collect { result ->
-                result.onSuccess { launches ->
-                    _launchFlow.value = launches
+                result.onSuccess { response ->
+                    _launchFlow.value = response
                     _uiState.value = UiState.Success
                 }.onFailure {
-                    _uiState.value = UiState.Error(it.message.toString())
+                    val stringResource = handleGetLaunchesDataError(it)
+                    _uiState.value = UiState.Error(stringResource)
                 }
             }
         }
@@ -115,9 +117,17 @@ class DashboardViewModel @Inject constructor(
                     _launchFlow.value = launches
                     _uiState.value = UiState.Success
                 }.onFailure {
-                    _uiState.value = UiState.Error(it.message.toString())
+                    val stringResource = handleGetLaunchesDataError(it)
+                    _uiState.value = UiState.Error(stringResource)
                 }
             }
+        }
+    }
+
+    private fun handleGetLaunchesDataError(exception: Throwable): Int{
+        return when (exception){
+            is AppException.CacheMissException -> R.string.exception_no_cache_text
+            else -> R.string.exception_unknown_text
         }
     }
 }

@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -72,7 +71,6 @@ fun Dashboard(
     val launchesList by dashboardViewModel.launchFlow.collectAsState()
 
     var showErrorDialog by remember { mutableStateOf(false) }
-    var errorDialogMessage by remember { mutableStateOf("") }
 
     var showMoreInfoDialog by remember { mutableStateOf(false) }
     var selectedLaunchItem by remember { mutableStateOf<Launch?>(null) }
@@ -83,69 +81,64 @@ fun Dashboard(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = "RocketScienceApp",
+                title = stringResource(id = R.string.app_name),
                 showFilterIcon = true,
                 onFilterIconClick = { showYearFilterDialog = true }
             )
         }
     ) { innerPadding ->
-        when (uiState) {
+        when (val state = uiState) {
             is UiState.Loading -> {
                 CircularLoading()
             }
 
             is UiState.Error -> {
-                errorDialogMessage = (uiState as UiState.Error).message
-                showErrorDialog = true
-            }
 
-            is UiState.Success -> {
-            }
-        }
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .padding(10.dp)
-
-        ) {
-            DashboardContent(
-                companyInfo = companyInfo,
-                launchesList = launchesList,
-                onLaunchItemClick = { launch ->
-                    selectedLaunchItem = launch
-                    showMoreInfoDialog = true
-                }
-            )
-
-            if (showErrorDialog) {
                 ErrorAlertDialog(
-                    error = errorDialogMessage,
+                    stringResource = state.stringResource,
                     onButtonClickAction = { showErrorDialog = false }
                 )
             }
 
-            if (showMoreInfoDialog) {
-                selectedLaunchItem?.let {
-                    MoreInfoDialog(
-                        onWikipediaButtonClickAction = { launchInfoNavAction(it.links.wikipediaLink) },
-                        onYoutubeButtonClickAction = { launchInfoNavAction(it.links.videoLink) },
-                        onDismissClickAction = { showMoreInfoDialog = false }
+            is UiState.Success -> {
+                Column(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize()
+                        .padding(10.dp)
+
+                ) {
+                    DashboardContent(
+                        companyInfo = companyInfo,
+                        launchesList = launchesList,
+                        onLaunchItemClick = { launch ->
+                            selectedLaunchItem = launch
+                            showMoreInfoDialog = true
+                        }
                     )
+                }
+                if (showMoreInfoDialog) {
+                    selectedLaunchItem?.let {
+                        MoreInfoDialog(
+                            onWikipediaButtonClickAction = { launchInfoNavAction(it.links.wikipediaLink) },
+                            onYoutubeButtonClickAction = { launchInfoNavAction(it.links.videoLink) },
+                            onDismissClickAction = { showMoreInfoDialog = false }
+                        )
+                    }
                 }
             }
 
-            if (showYearFilterDialog) {
-                YearFilterAlertDialog(
-                    onApplyFilterButtonClick = { filterYearsList, organizeDescending ->
-                        dashboardViewModel.getFilteredLaunches(
-                            filterYearsList = filterYearsList,
-                            organizeDescending = organizeDescending
-                        )
-                    },
-                    onDismissClickAction = { showYearFilterDialog = false }
-                )
-            }
+        }
+        if (showYearFilterDialog) {
+            YearFilterAlertDialog(
+                onApplyFilterButtonClick = { filterYearsList, organizeDescending ->
+                    dashboardViewModel.getFilteredLaunches(
+                        filterYearsList = filterYearsList,
+                        organizeDescending = organizeDescending
+                    )
+                },
+                onDismissClickAction = { showYearFilterDialog = false }
+            )
         }
     }
 }

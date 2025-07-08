@@ -14,7 +14,7 @@ interface LocalDataSource {
      *
      * @return A [Flow] that emits the stored [CompanyInfo].
      */
-    suspend fun getCompanyInfoFromDatabase(): Flow<CompanyInfo>
+    fun getCompanyInfoFromDatabase(): Flow<CompanyInfo>
 
     /**
      * Saves the given [CompanyInfo] into the local database.
@@ -28,7 +28,7 @@ interface LocalDataSource {
      *
      * @return A [Flow] that emits the stored [Launch] data.
      */
-    suspend fun getLaunchesFromDatabase(): Flow<List<Launch>>
+    fun getLaunchesFromDatabase(): Flow<List<Launch>>
 
     /**
      * Saves the given list of [Launch] into the local database.

@@ -1,8 +1,11 @@
 package com.project.rocketscience.domain
 
+import android.util.Log
 import com.project.rocketscience.data.remote.model.CompanyInfo
 import com.project.rocketscience.data.repository.AppRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 
@@ -26,5 +29,11 @@ class GetCompanyInfoUseCase @Inject constructor(private val appRepository: AppRe
      *         - On success, the [Result] will contain the [CompanyInfo].
      *         - On failure, the [Result] will contain an [Exception] detailing the error.
      */
-    suspend operator fun invoke(): Flow<Result<CompanyInfo>> = appRepository.getCompanyInfo()
+    operator fun invoke(): Flow<Result<CompanyInfo>>{
+        return appRepository.getCompanyInfo()
+            .map { Result.success(it) }
+            .catch {
+                Log.e("GetCompanyInfoUseCase", "Error getting the company data: $it")
+            }
+    }
 }
