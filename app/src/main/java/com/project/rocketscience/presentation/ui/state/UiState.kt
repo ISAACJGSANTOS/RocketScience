@@ -1,5 +1,7 @@
 package com.project.rocketscience.presentation.ui.state
 
+import androidx.annotation.StringRes
+
 
 /**
  * Represents the UI state for a screen or component.
@@ -18,9 +20,9 @@ sealed class UiState {
     /**
      * Represents an error state with an associated message describing the issue.
      *
-     * @param message A error message to display to the user.
+     * @param stringResource A error message to display to the user.
      */
-    data class Error(val message: String) : UiState()
+    data class Error(@StringRes val stringResource: Int) : UiState()
 
     /**
      * Indicates that a background operation (such as loading data) is in progress.

@@ -82,6 +82,15 @@ dependencies {
 
     implementation(libs.coil.compose)
 
+
+    testImplementation(libs.turbine)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.slf4j.simple)
+    androidTestImplementation(libs.androidx.espresso.intents)
+    testImplementation(libs.mockk.v1132)
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.mockwebserver)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
